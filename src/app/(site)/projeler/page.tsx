@@ -58,7 +58,7 @@ export default function ProjelerPage() {
       </div>
 
       {/* GRID CONTAINER */}
-      <div style={{ paddingLeft: "120px", paddingRight: "120px", paddingBottom: "160px", display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div style={{ paddingBottom: "100px" }} className="px-6 md:px-[120px] flex flex-col gap-3">
 
         {/* ROW 1 — 2 kart, 1:1 */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>

@@ -60,7 +60,7 @@ export default function HakkimizdaPage() {
     <main style={{ background: "#fff", minHeight: "100vh" }}>
 
       {/* ─── 1. VIDEO HERO ─── */}
-      <section style={{ padding: "100px 120px 0" }}>
+      <section className="px-6 md:px-[120px]" style={{ paddingTop: "100px" }}>
         <div style={{
           position: "relative",
           width: "100%",
@@ -114,11 +114,11 @@ export default function HakkimizdaPage() {
       </section>
 
       {/* ─── 3. STATS ─── */}
-      <section ref={statsRef} style={{ padding: "80px 120px" }}>
+      <section ref={statsRef} className="px-6 md:px-[120px]" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
         <div style={{
           background: "#EBEBF0",
           borderRadius: "20px",
-          padding: "64px 64px 48px",
+          padding: "32px 24px 32px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -142,7 +142,7 @@ export default function HakkimizdaPage() {
           </div>
 
           {/* Stats row */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0", width: "100%", borderTop: "1px solid #d4d4de", paddingTop: "40px" }}>
+          <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "0", width: "100%", borderTop: "1px solid #d4d4de", paddingTop: "32px" }}>
             {stats.map((stat, i) => (
               <StatItem key={i} stat={stat} active={statsVisible} interClass={inter.className} />
             ))}
@@ -151,7 +151,7 @@ export default function HakkimizdaPage() {
       </section>
 
       {/* ─── 4. TEAM / ABOUT ─── */}
-      <section style={{ padding: "0 120px 120px", display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "80px", alignItems: "center" }}>
+      <section className="px-6 md:px-[120px] grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-10 md:gap-20" style={{ paddingBottom: "80px", alignItems: "center" }}>
         <div>
           <p className={inter.className} style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "20px" }}>
             Ekibimiz
@@ -174,7 +174,7 @@ export default function HakkimizdaPage() {
       </section>
 
       {/* ─── 5. AWARDS ─── */}
-      <section style={{ padding: "0 120px 160px" }}>
+      <section className="px-6 md:px-[120px]" style={{ paddingBottom: "100px" }}>
         <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <p className={inter.className} style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#9ca3af", marginBottom: "16px" }}>
             Ödüller
@@ -197,7 +197,7 @@ export default function HakkimizdaPage() {
               <span className={inter.className} style={{ fontSize: "clamp(16px, 2vw, 24px)", fontWeight: 500, color: "#1a1a1a", letterSpacing: "-0.01em" }}>
                 {award.name}
               </span>
-              <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+              <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                 <span className={inter.className} style={{ fontSize: "13px", color: "#6b7280" }}>{award.category}</span>
                 <span className={inter.className} style={{ fontSize: "13px", color: "#9ca3af", minWidth: "72px", textAlign: "right" }}>{award.date}</span>
               </div>

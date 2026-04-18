@@ -22,7 +22,7 @@ export default function IletisimPage() {
     <main style={{ background: "#fff", minHeight: "100vh" }}>
 
       {/* ─── HERO ─── */}
-      <section style={{ paddingLeft: "120px", paddingRight: "120px", paddingTop: "140px", paddingBottom: "0" }}>
+      <section className="px-6 md:px-[120px]" style={{ paddingTop: "120px", paddingBottom: "0" }}>
         {/* Top row: label left, socials right */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
           <p className={inter.className} style={{ fontSize: "12px", color: "#9ca3af", letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -58,7 +58,7 @@ export default function IletisimPage() {
         <div style={{ borderTop: "1px solid #e5e5e5", marginBottom: "60px" }} />
 
         {/* Two columns: email left, form right */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", paddingBottom: "120px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20" style={{ paddingBottom: "80px" }}>
 
           {/* Left — email + info */}
           <div>

@@ -11,7 +11,7 @@ export default function Home() {
     <>
     <main className="relative flex flex-col bg-[#ffffff] overflow-x-hidden">
       {/* ─── TITLE SECTION ─── */}
-      <div className="flex flex-col items-center justify-center z-10" style={{ paddingTop: "160px", paddingBottom: "80px" }}>
+      <div className="flex flex-col items-center justify-center z-10" style={{ paddingTop: "120px", paddingBottom: "60px" }}>
         <h1 
           className="font-black text-[15vw] md:text-[180px] leading-none text-[#1a1a1a] tracking-tight text-center relative z-10 w-full"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}
@@ -37,7 +37,7 @@ export default function Home() {
       </div>
 
       {/* ─── ABOUT / BRAND SECTION ─── */}
-      <section className="w-full flex flex-col items-center justify-center bg-white" style={{ paddingTop: "100px", paddingBottom: "100px", paddingLeft: "100px", paddingRight: "100px" }}>
+      <section className="w-full flex flex-col items-center justify-center bg-white px-6 md:px-[100px]" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
         <div style={{ width: '100%', maxWidth: '800px', overflow: 'hidden' }}>
           <p className={`${inter.className} text-[24px] md:text-[36px] leading-tight text-center font-medium text-[#1a1a1a] tracking-tight`}>
           We’re Bungee<sup className="text-[0.4em] align-top relative top-[0.4em] -ml-[0.05em] mr-[0.1em]">®</sup> — a creative
@@ -50,7 +50,7 @@ export default function Home() {
       </section>
 
       {/* ─── LATEST PROJECTS SECTION ─── */}
-      <section className="w-full" style={{ paddingTop: "0px", paddingBottom: "200px", paddingLeft: "120px", paddingRight: "120px" }}>
+      <section className="w-full px-6 md:px-[120px]" style={{ paddingTop: "0px", paddingBottom: "120px" }}>
         <div className="flex justify-between items-end" style={{ marginBottom: "80px" }}>
           <h2 className={`${inter.className} text-[36px] md:text-[52px] leading-[1.05] font-medium text-[#1a1a1a] tracking-tight`}>
             Latest
@@ -144,18 +144,18 @@ export default function Home() {
       </section>
 
       {/* ─── SERVICES SECTION ─── */}
-      <section className="w-full" style={{ paddingBottom: "200px" }}>
+      <section className="w-full" style={{ paddingBottom: "120px" }}>
         {/* Header */}
         <div
-          className="flex justify-between items-center"
-          style={{ paddingLeft: "120px", paddingRight: "120px", marginBottom: "48px" }}
+          className="flex justify-between items-center px-6 md:px-[120px]"
+          style={{ marginBottom: "40px" }}
         >
-          <h2 className={`${inter.className} text-[36px] md:text-[52px] leading-[1.05] font-medium text-[#1a1a1a] tracking-tight`}>
+          <h2 className={`${inter.className} text-[32px] md:text-[52px] leading-[1.05] font-medium text-[#1a1a1a] tracking-tight`}>
             Services.
           </h2>
           <a
             href="/iletisim"
-            className={`${inter.className} flex items-center gap-2 text-[14px] font-medium text-[#1a1a1a] hover:opacity-60 transition-opacity tracking-wide`}
+            className={`${inter.className} flex items-center gap-2 text-[13px] md:text-[14px] font-medium text-[#1a1a1a] hover:opacity-60 transition-opacity tracking-wide`}
           >
             Get in touch
             <span className="text-[20px] font-light leading-none">+</span>
@@ -166,8 +166,8 @@ export default function Home() {
         <div
           className="flex gap-[10px] overflow-x-auto"
           style={{
-            paddingLeft: "120px",
-            paddingRight: "120px",
+            paddingLeft: "24px",
+            paddingRight: "24px",
             paddingBottom: "16px",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -209,8 +209,8 @@ export default function Home() {
               key={service.num}
               className="flex-shrink-0 flex flex-col justify-between cursor-pointer group"
               style={{
-                width: "420px",
-                height: "480px",
+                width: "min(80vw, 380px)",
+                height: "440px",
                 backgroundColor: service.bg,
                 borderRadius: "20px",
                 padding: "24px",

@@ -45,14 +45,14 @@ export default function FAQ() {
 
   return (
     <section
-      className="w-full bg-white"
-      style={{ paddingLeft: "120px", paddingRight: "120px", paddingTop: "40px", paddingBottom: "160px" }}
+      className="w-full bg-white px-6 md:px-[120px]"
+      style={{ paddingTop: "40px", paddingBottom: "100px" }}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
         {/* Left — Heading */}
         <div>
           <h2
-            className={`${inter.className} text-[52px] md:text-[72px] font-medium text-[#1a1a1a] tracking-tight leading-none`}
+            className={`${inter.className} text-[48px] md:text-[72px] font-medium text-[#1a1a1a] tracking-tight leading-none`}
           >
             FAQ.
           </h2>
