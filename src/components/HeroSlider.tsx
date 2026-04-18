@@ -18,14 +18,14 @@ const FALLBACK_SLIDES: Slide[] = [
 
 export default function HeroSlider() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [slides, setSlides] = useState<Slide[]>([]);
+  // ── Start with fallback immediately — swap to Firestore if available ──
+  const [slides, setSlides] = useState<Slide[]>(FALLBACK_SLIDES);
 
-  // ── Fetch slides from Firestore (fallback to static) ──
   useEffect(() => {
     getContent("home").then(d => {
       const firestoreSlides = d?.heroSlides as Slide[] | undefined;
-      setSlides(firestoreSlides?.length ? firestoreSlides : FALLBACK_SLIDES);
-    }).catch(() => setSlides(FALLBACK_SLIDES));
+      if (firestoreSlides?.length) setSlides(firestoreSlides);
+    }).catch(() => { /* keep fallback */ });
   }, []);
 
   // ── Animation ──
@@ -50,8 +50,6 @@ export default function HeroSlider() {
     animId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animId);
   }, [slides]);
-
-  if (slides.length === 0) return null;
 
   // Triple for seamless loop
   const allSlides = [...slides, ...slides, ...slides];
