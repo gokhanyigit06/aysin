@@ -51,6 +51,104 @@ export interface SiteContent {
   footer?: { email: string; socials: { label: string; url: string }[] };
 }
 
+// ─── EDITABLE CONTENT MODEL (header + hero + home sections) ───
+// Shared contract. Firestore docs:
+//   content/site  → SiteHeader
+//   content/home  → HomeContent
+// Every UI component reads its section with getContent() and falls back to the
+// DEFAULT_* constants below when the Firestore doc is missing/partial.
+
+export interface NavLink { label: string; href: string; }
+
+export interface AnnouncementBar {
+  enabled: boolean;
+  text: string;
+  href: string;
+  bgColor: string;
+  textColor: string;
+}
+
+export interface SiteHeader {
+  logoType: "text" | "image";
+  logoText: string;
+  logoImageSrc: string;
+  nav: NavLink[];
+  announcement: AnnouncementBar;
+  email: string;
+}
+
+export interface HeroContent {
+  backgroundType: "video" | "image";
+  backgroundVideoSrc: string;
+  backgroundImageSrc: string;
+  wordmark: string;
+  showRegistered: boolean;
+  caption: string;
+  overlayOpacity: number; // 0..0.7 — dark scrim over the media for text legibility
+}
+
+export interface ServiceItem { num: string; label: string; desc: string; bg: string; }
+export interface ShowreelContent { headline: string; videoSrc: string; }
+
+export interface HomeContent {
+  hero?: HeroContent;
+  aboutText?: string;
+  marqueeItems?: string[];
+  services?: ServiceItem[];
+  showreel?: ShowreelContent;
+  // legacy fields (kept so old data doesn't break reads)
+  heroSlides?: { src: string; mediaType: "image" | "video" }[];
+  heroCaption?: string;
+}
+
+export const DEFAULT_HEADER: SiteHeader = {
+  logoType: "text",
+  logoText: "Real",
+  logoImageSrc: "",
+  nav: [
+    { label: "Ana Sayfa", href: "/" },
+    { label: "Projeler", href: "/projeler" },
+    { label: "Hakkımızda", href: "/hakkimizda" },
+    { label: "İletişim", href: "/iletisim" },
+  ],
+  announcement: {
+    enabled: true,
+    text: "AGENCY OF THE YEAR AWARD",
+    href: "#",
+    bgColor: "#5CE65C",
+    textColor: "#0a0a0a",
+  },
+  email: "info@aysin.com",
+};
+
+export const DEFAULT_HERO: HeroContent = {
+  backgroundType: "image",
+  backgroundVideoSrc: "",
+  backgroundImageSrc: "https://images.unsplash.com/photo-1620121692029-d088224ddc74?w=1920&q=80",
+  wordmark: "Real",
+  showRegistered: true,
+  caption: "Creative studio based in İstanbul",
+  overlayOpacity: 0.15,
+};
+
+export const DEFAULT_SERVICES: ServiceItem[] = [
+  { num: "001", label: "Branding", desc: "Kalıcı iz bırakan logolar ve marka sistemleri tasarlıyoruz.", bg: "#DDD6F3" },
+  { num: "002", label: "Development", desc: "Amaç ve hassasiyetle inşa edilmiş güzel, işlevsel web siteleri.", bg: "#C8EFC0" },
+  { num: "003", label: "SEO Optimization", desc: "Gerçek verilerle desteklenen SEO stratejileriyle daha hızlı bulunun.", bg: "#F5C4BC" },
+  { num: "004", label: "Social Media", desc: "Topluluk kuran ve etkileşim getiren içerik stratejileri.", bg: "#FAE0C4" },
+  { num: "005", label: "Photography", desc: "Markanızın ruhunu yakalayan görsel hikâye anlatımı.", bg: "#C4DCF5" },
+];
+
+export const DEFAULT_SHOWREEL: ShowreelContent = {
+  headline: "Real® cesur markalar ve iddialı fikirler şekillendiren bir yaratıcı stüdyodur.",
+  videoSrc: "",
+};
+
+export const DEFAULT_ABOUT_TEXT =
+  "Biz Real® — cesur markalar, etkileyici web siteleri ve sıradan olmayı reddeden fikirler geliştiren bir yaratıcı stüdyoyuz.";
+
+export const DEFAULT_MARQUEE = ["Yallo!", "Bliss+", "Flea", "Polltree", "Apex", "Orion"];
+
 // ─── SEED DATA ───────────────────────────────────────────
 const SEED_PROJECTS: Omit<Project, "id">[] = [
   {

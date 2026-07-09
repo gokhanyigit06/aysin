@@ -1,11 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import "./admin.css";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: "◈" },
+  { href: "/admin/site", label: "Site / Header", icon: "▤" },
   { href: "/admin/projeler", label: "Projeler", icon: "▦" },
   { href: "/admin/anasayfa", label: "Ana Sayfa", icon: "⌂" },
   { href: "/admin/hakkimizda", label: "Hakkımızda", icon: "◉" },
@@ -13,8 +17,89 @@ const nav = [
   { href: "/admin/footer", label: "Footer", icon: "▬" },
 ];
 
+// ─── LOGIN SCREEN ───────────────────────────────────────
+function AdminLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+    } catch (err) {
+      const code = (err as { code?: string })?.code || "";
+      if (code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found")) {
+        setError("E-posta veya şifre hatalı.");
+      } else if (code.includes("too-many-requests")) {
+        setError("Çok fazla deneme. Lütfen biraz bekleyin.");
+      } else if (code.includes("operation-not-allowed") || code.includes("configuration-not-found")) {
+        setError("Firebase Authentication henüz etkin değil.");
+      } else {
+        setError("Giriş yapılamadı. Tekrar deneyin.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafafa", padding: "24px" }}>
+      <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "360px", background: "#fff", border: "1px solid #e5e5e5", borderRadius: "16px", padding: "32px 28px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ fontSize: "28px", fontWeight: 900, letterSpacing: "-0.04em", color: "#1a1a1a" }}>A</div>
+          <p style={{ fontSize: "10px", color: "#9ca3af", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: "4px" }}>Admin Panel</p>
+        </div>
+
+        <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#1a1a1a", marginBottom: "4px" }}>Giriş yap</h1>
+        <p style={{ fontSize: "13px", color: "#9ca3af", marginBottom: "20px" }}>Yönetim paneline erişmek için giriş yapın.</p>
+
+        <div className="admin-field">
+          <label className="admin-label">E-posta</label>
+          <input className="admin-input" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@aysin.com" required />
+        </div>
+
+        <div className="admin-field">
+          <label className="admin-label">Şifre</label>
+          <input className="admin-input" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+        </div>
+
+        {error && (
+          <p style={{ fontSize: "12px", color: "#dc2626", marginBottom: "12px" }}>{error}</p>
+        )}
+
+        <button type="submit" className="admin-btn" style={{ width: "100%", marginTop: "4px" }} disabled={busy}>
+          {busy ? "Giriş yapılıyor..." : "Giriş yap"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, u => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+  }, []);
+
+  if (authLoading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fafafa", color: "#9ca3af", fontSize: "13px" }}>
+        Yükleniyor…
+      </div>
+    );
+  }
+
+  if (!user) return <AdminLogin />;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#fafafa", color: "#1a1a1a" }}>
@@ -64,10 +149,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Bottom */}
-        <div style={{ padding: "16px 24px", borderTop: "1px solid #e5e5e5" }}>
+        <div style={{ padding: "16px 24px", borderTop: "1px solid #e5e5e5", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <span style={{ fontSize: "11px", color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {user.email}
+          </span>
           <Link href="/" target="_blank" style={{ fontSize: "12px", color: "#9ca3af", textDecoration: "none" }}>
             ↗ Siteyi görüntüle
           </Link>
+          <button
+            onClick={() => signOut(auth)}
+            style={{ fontSize: "12px", color: "#dc2626", background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}
+          >
+            ⇥ Çıkış yap
+          </button>
         </div>
       </aside>
 

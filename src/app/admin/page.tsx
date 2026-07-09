@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
+    { label: "Site / Header", value: "✎", href: "/admin/site", desc: "Logo, menü, duyuru barı" },
     { label: "Projeler", value: projectCount ?? "—", href: "/admin/projeler", desc: "Proje ekle, düzenle, sil" },
     { label: "Ana Sayfa", value: "✎", href: "/admin/anasayfa", desc: "Hero, hakkında, servisler" },
     { label: "Hakkımızda", value: "✎", href: "/admin/hakkimizda", desc: "Sayaçlar, ekip, ödüller" },

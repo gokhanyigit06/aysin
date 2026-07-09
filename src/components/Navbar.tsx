@@ -2,123 +2,181 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-const menuItems = [
-  { num: "01", label: "Ana Sayfa", href: "/" },
-  { num: "02", label: "Projeler", href: "/projeler" },
-  { num: "03", label: "Hakkımızda", href: "/hakkimizda" },
-  { num: "04", label: "Blog", href: "/blog" },
-  { num: "05", label: "İletişim", href: "/iletisim" },
-];
+import { getContent, DEFAULT_HEADER, type SiteHeader } from "@/lib/adminDb";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [time, setTime] = useState("");
+  const [hidden, setHidden] = useState(false);
+  const [header, setHeader] = useState<SiteHeader>(DEFAULT_HEADER);
 
+  // Load header content from Firestore, merge over defaults
   useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      const h = now.getHours().toString().padStart(2, "0");
-      const m = now.getMinutes().toString().padStart(2, "0");
-      setTime(`${h}:${m}`);
+    let active = true;
+    (async () => {
+      try {
+        const data = await getContent("site");
+        if (!active || !data) return;
+        const merged: SiteHeader = { ...DEFAULT_HEADER, ...data };
+        merged.nav =
+          Array.isArray(data.nav) && data.nav.length > 0 ? data.nav : DEFAULT_HEADER.nav;
+        merged.announcement =
+          data.announcement && typeof data.announcement === "object"
+            ? { ...DEFAULT_HEADER.announcement, ...data.announcement }
+            : DEFAULT_HEADER.announcement;
+        setHeader(merged);
+      } catch {
+        /* keep defaults */
+      }
+    })();
+    return () => {
+      active = false;
     };
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
   }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
+
+  // Hide header on scroll down, reveal on scroll up
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 80) {
+        setHidden(false);
+      } else if (y > lastY + 4) {
+        setHidden(true);   // scrolling down
+      } else if (y < lastY - 4) {
+        setHidden(false);  // scrolling up
+      }
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const nav = header.nav;
+  const announcement = header.announcement;
 
   return (
     <>
-      {/* ─── TOP NAV BAR ─── */}
+      {/* ─── TOP STRUCTURE: header pill + announcement bar ─── */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
         style={{
-          padding: "20px 36px",
-          background: menuOpen ? "transparent" : "rgba(255,255,255,0.6)",
-          backdropFilter: menuOpen ? "none" : "blur(16px)",
-          WebkitBackdropFilter: menuOpen ? "none" : "blur(16px)",
-          transition: "background 0.4s ease",
+          position: "fixed",
+          top: "12px",
+          left: "12px",
+          right: "12px",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          transform: hidden && !menuOpen ? "translateY(-135%)" : "translateY(0)",
+          transition: "transform 0.4s cubic-bezier(0.4,0,0.2,1)",
+          willChange: "transform",
         }}
       >
-        {/* Logo */}
-        <Link
-          href="/"
-          onClick={() => setMenuOpen(false)}
-          className="font-black text-[38px] tracking-tighter text-[#1a1a1a] leading-none hover:opacity-60 transition-opacity select-none"
-          style={{ fontFamily: "var(--font-inter), sans-serif", zIndex: 60, position: "relative" }}
+        {/* 1) HEADER PILL */}
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "16px",
+            padding: "14px 22px",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          A
-        </Link>
-
-        {/* Hamburger — 3 lines that morph to X */}
-        <button
-          id="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Kapat" : "Menü"}
-          style={{ position: "relative", zIndex: 60, width: "36px", height: "24px", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-        >
-          <span
+          {/* Logo */}
+          <Link
+            href="/"
+            onClick={() => setMenuOpen(false)}
             style={{
-              display: "block", height: "1.5px", background: "#1a1a1a",
-              transformOrigin: "left center",
-              transform: menuOpen ? "rotate(45deg) translateY(-1px)" : "rotate(0)",
-              transition: "transform 0.35s cubic-bezier(0.77,0,0.175,1)",
-              width: "100%",
+              display: "inline-flex",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "#1a1a1a",
             }}
-          />
-          <span
-            style={{
-              display: "block", height: "1.5px", background: "#1a1a1a",
-              opacity: menuOpen ? 0 : 1,
-              transform: menuOpen ? "translateX(10px)" : "translateX(0)",
-              transition: "opacity 0.2s ease, transform 0.3s ease",
-              width: "100%",
-            }}
-          />
-          <span
-            style={{
-              display: "block", height: "1.5px", background: "#1a1a1a",
-              transformOrigin: "left center",
-              transform: menuOpen ? "rotate(-45deg) translateY(1px)" : "rotate(0)",
-              transition: "transform 0.35s cubic-bezier(0.77,0,0.175,1)",
-              width: "100%",
-            }}
-          />
-        </button>
-      </div>
+          >
+            {header.logoType === "image" && header.logoImageSrc ? (
+              <img
+                src={header.logoImageSrc}
+                alt={header.logoText || "logo"}
+                style={{ height: "26px", width: "auto", display: "block" }}
+              />
+            ) : (
+              <span
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 900,
+                  letterSpacing: "-0.03em",
+                  color: "#1a1a1a",
+                  lineHeight: 1,
+                  fontFamily: "var(--font-inter), sans-serif",
+                }}
+              >
+                {header.logoText}
+              </span>
+            )}
+          </Link>
 
-      {/* ─── VERTICAL CLOCK — Left ─── */}
-      <div
-        className="fixed z-40 hidden md:flex items-center"
-        style={{ left: "16px", top: "50%", transform: "translateY(-50%) rotate(-90deg)", transformOrigin: "center center" }}
-      >
-        <span style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: 500, letterSpacing: "0.15em", color: "#1a1a1a", opacity: 0.5, whiteSpace: "nowrap" }}>
-          ( {time}&nbsp;&nbsp;TR )
-        </span>
-      </div>
+          {/* MENU / CLOSE button */}
+          <button
+            id="menu-toggle"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Kapat" : "Menü"}
+            style={{
+              borderRadius: "10px",
+              border: "1px solid #e5e5e5",
+              padding: "8px 16px",
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              background: "#fff",
+              color: "#1a1a1a",
+              cursor: "pointer",
+            }}
+          >
+            {menuOpen ? "Close" : "Menu"}
+          </button>
+        </div>
 
-      {/* ─── VERTICAL SOCIALS — Right ─── */}
-      <div
-        className="fixed z-40 hidden md:flex items-center"
-        style={{ right: "16px", top: "50%", transform: "translateY(-50%) rotate(90deg)", transformOrigin: "center center", gap: "16px" }}
-      >
-        {["BE", "DR", "X"].map((label, i, arr) => (
-          <span key={label} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <a href="#" style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: 500, letterSpacing: "0.15em", color: "#1a1a1a", opacity: 0.5, textDecoration: "none", transition: "opacity 0.2s" }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "0.5")}
+        {/* 2) ANNOUNCEMENT BAR */}
+        {announcement.enabled && (
+          <a
+            href={announcement.href || "#"}
+            style={{
+              background: announcement.bgColor || "#5CE65C",
+              color: announcement.textColor || "#0a0a0a",
+              borderRadius: "12px",
+              padding: "11px",
+              textAlign: "center",
+              textDecoration: "none",
+              display: "block",
+              transition: "opacity 0.2s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          >
+            <span
+              style={{
+                textTransform: "uppercase",
+                fontSize: "12.5px",
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+              }}
             >
-              {label}
-            </a>
-            {i < arr.length - 1 && <span style={{ fontSize: "11px", opacity: 0.25, fontFamily: "monospace" }}>/</span>}
-          </span>
-        ))}
+              {announcement.text}
+              <span style={{ marginLeft: "8px" }}>&#8599;</span>
+            </span>
+          </a>
+        )}
       </div>
 
       {/* ─── FULLSCREEN MENU OVERLAY ─── */}
@@ -141,9 +199,9 @@ export default function Navbar() {
       >
         {/* Nav items */}
         <nav style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-          {menuItems.map((item, i) => (
+          {nav.map((item, i) => (
             <Link
-              key={item.num}
+              key={`${item.href}-${i}`}
               href={item.href}
               onClick={() => setMenuOpen(false)}
               style={{
@@ -162,7 +220,7 @@ export default function Navbar() {
             >
               {/* Number tag */}
               <span style={{ fontSize: "14px", fontFamily: "monospace", color: "#4b5563", letterSpacing: "0.1em", flexShrink: 0 }}>
-                &#123;&nbsp;_{item.num}&nbsp;&#125;
+                &#123;&nbsp;_{String(i + 1).padStart(2, "0")}&nbsp;&#125;
               </span>
 
               {/* Label */}
@@ -205,8 +263,8 @@ export default function Navbar() {
             transition: "transform 0.5s ease 0.5s, opacity 0.4s ease 0.5s",
           }}
         >
-          <a href="mailto:info@aysin.com" style={{ fontSize: "16px", color: "#1a1a1a", textDecoration: "none", fontWeight: 500, fontFamily: "var(--font-inter), sans-serif" }}>
-            info@aysin.com
+          <a href={`mailto:${header.email}`} style={{ fontSize: "16px", color: "#1a1a1a", textDecoration: "none", fontWeight: 500, fontFamily: "var(--font-inter), sans-serif" }}>
+            {header.email}
           </a>
           <div style={{ width: "28px", height: "1.5px", background: "#1a1a1a", marginTop: "8px" }} />
         </div>
